@@ -43,7 +43,7 @@
 namespace SDDM {
     namespace VirtualTerminal {
 #ifdef __FreeBSD__
-        const char *defaultVtPath = "/dev/ttyv0";
+        static const char *defaultVtPath = "/dev/ttyv0";
 
         QString path(int vt) {
             char c = (vt <= 10 ? '0' : 'a') + (vt - 1);
@@ -59,14 +59,8 @@ namespace SDDM {
             return vtActive;
         }
 #else
-        const char *defaultVtPath = "/dev/tty0";
-
-        QString path(int vt) {
-            return QStringLiteral("/dev/tty%1").arg(vt);
-        }
-
         int getVtActive(int fd) {
-            vt_stat vtState { };
+            vt_stat vtState = { 0 };
             if (ioctl(fd, VT_GETSTATE, &vtState) < 0) {
                 qCritical() << "Failed to get current VT:" << strerror(errno);
                 return -1;
@@ -75,19 +69,19 @@ namespace SDDM {
         }
 #endif
 
-        static void onAcquireDisplay([[maybe_unused]] int signal) {
+        static void onAcquireDisplay(int signal) {
             int fd = open(defaultVtPath, O_RDWR | O_NOCTTY);
             ioctl(fd, VT_RELDISP, VT_ACKACQ);
             close(fd);
         }
 
-        static void onReleaseDisplay([[maybe_unused]] int signal) {
+        static void onReleaseDisplay(int signal) {
             int fd = open(defaultVtPath, O_RDWR | O_NOCTTY);
             ioctl(fd, VT_RELDISP, 1);
             close(fd);
         }
 
-        static bool handleVtSwitches(int fd) {
+static bool handleVtSwitches(int fd) {
             vt_mode setModeRequest { };
             bool ok = true;
 

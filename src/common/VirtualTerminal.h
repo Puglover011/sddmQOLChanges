@@ -24,8 +24,7 @@
 
 namespace SDDM {
     namespace VirtualTerminal {
-        extern const char *defaultVtPath;
-
+>>>>>>> 2d7f1f7 (Get rid of FreeBSD-specific implementation of VirtualTerminal.)
         QString path(int vt);
         int currentVt();
         int setUpNewVt();

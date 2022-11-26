@@ -264,8 +264,6 @@ namespace SDDM {
 #else
                 m_pam->setItem(PAM_TTY, qPrintable(display));
 #endif
-            }
-        }
 
         if (!m_pam->putEnv(sessionEnv)) {
             m_app->error(m_pam->errorString(), Auth::ERROR_INTERNAL);
